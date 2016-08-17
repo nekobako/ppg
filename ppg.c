@@ -7,7 +7,7 @@
 
 
 int GIRLS_DIRECTION = 1;
-int GIRLS_SPEED = 500;
+int GIRLS_SPEED = 100;
 int GIRLS_LEN = 100;
 int TITLE_LOGO = 0;
 
