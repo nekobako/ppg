@@ -3,4 +3,4 @@
 Girls fly across your terminal.
 
 ## Usage
-`ppg [-r] [-s speed] [-l length]`
+`ppg [-rt] [-s speed] [-l length]`

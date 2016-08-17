@@ -9,6 +9,7 @@
 int GIRLS_DIRECTION = 1;
 int GIRLS_SPEED = 500;
 int GIRLS_LEN = 100;
+int TITLE_LOGO = 0;
 
 struct winsize w;
 
@@ -21,6 +22,8 @@ void draw_girl(Girl girl, int time);
 void draw_l_girl(Girl girl, int time);
 void draw_r_girl(Girl girl, int time);
 
+void draw_title_logo();
+
 
 int main(int argc, char *argv[]) {
 	option(argc, argv);
@@ -29,8 +32,15 @@ int main(int argc, char *argv[]) {
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
 	printf("\x1b[?25l\x1b[1m");
-	printf("\n\n\n\n\n");
-	printf("\x1b[2A");
+
+	if(TITLE_LOGO) {
+		printf("\n\n\n\n\n\n\n\n\n\n");
+		printf("\x1b[4A");
+	}
+	else {
+		printf("\n\n\n\n\n");
+		printf("\x1b[2A");
+	}
 
 	for(int i = 0; i <= w.ws_col + GIRLS_LEN + GIRLS_EXTRA_LEN + MAX_GIRLS_DELAY; i++) {
 		draw_girls(i);
@@ -38,7 +48,18 @@ int main(int argc, char *argv[]) {
 		usleep((unsigned int)(1000000.0 / GIRLS_SPEED));
 	}
 
-	printf("\x1b[2B");
+	if(TITLE_LOGO) {
+		printf("\x1b[4B");
+		for(int i = 0; i <= (TITLE_LOGO_HEIGHT + 1) / 2; i++) {
+			draw_title_logo(i);
+			fflush(stdout);
+			usleep(TITLE_LOGO_DELAY);
+		}
+	}
+	else {
+		printf("\x1b[2B");
+	}
+
 	printf("\x1b[0m\x1b[?25h");
 
 	return 0;
@@ -58,6 +79,7 @@ void option(int argc, char *argv[]) {
 				while(*arg != '\0') {
 					switch(*arg++) {
 						case 'r': GIRLS_DIRECTION = 0; break;
+						case 't': TITLE_LOGO = 1;      break;
 					}
 				}
 				break;
@@ -168,4 +190,17 @@ void draw_r_girl(Girl girl, int time) {
 
 	print_decorated_char(left + 1 + GIRLS_LEN + 1 + 1 + 1 + 1, "\x1b[K");
 	printf("%s%s\r", FG_DEFAULT, BG_DEFAULT);
+}
+
+void draw_title_logo(int time) {
+	static char *title_logo[] = {
+		TITLE_LOGO_0, TITLE_LOGO_1, TITLE_LOGO_2, TITLE_LOGO_3, TITLE_LOGO_4, TITLE_LOGO_5, TITLE_LOGO_6, TITLE_LOGO_7, TITLE_LOGO_8, TITLE_LOGO_9
+	};
+
+	int half_height = (TITLE_LOGO_HEIGHT + 1) / 2;
+
+	printf("\x1b[10A");
+	for(int i = 0; i < TITLE_LOGO_HEIGHT; i++) {
+		printf("%s\n", (((i < half_height && i >= half_height - time) || (i >= half_height && i < half_height + time)) ? title_logo[i] : ""));
+	}
 }
